@@ -6,6 +6,42 @@
   <title>WatchTower Control</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
   <style>
+    :root {
+      --bg-primary: #f5f7fa;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f8fafc;
+      --text-primary: #1a1f36;
+      --text-secondary: #4b5563;
+      --text-tertiary: #6b7280;
+      --border-color: #e5e9f2;
+      --accent-color: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger-color: #ef4444;
+      --danger-hover: #dc2626;
+      --success-color: #10b981;
+      --button-secondary-bg: #e5e7eb;
+      --button-secondary-hover: #d1d5db;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --bg-tertiary: #374151;
+      --text-primary: #f3f4f6;
+      --text-secondary: #d1d5db;
+      --text-tertiary: #9ca3af;
+      --border-color: #374151;
+      --accent-color: #3b82f6;
+      --accent-hover: #60a5fa;
+      --danger-color: #ef4444;
+      --danger-hover: #f87171;
+      --success-color: #10b981;
+      --button-secondary-bg: #4b5563;
+      --button-secondary-hover: #6b7280;
+      --shadow-color: rgba(0, 0, 0, 0.3);
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -14,22 +50,58 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f7fa;
-      color: #1a1f36;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       line-height: 1.5;
       padding: 2rem;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .header {
       margin-bottom: 2rem;
       padding-bottom: 1rem;
-      border-bottom: 1px solid #e5e9f2;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .header h1 {
       font-size: 1.75rem;
       font-weight: 600;
-      color: #1a1f36;
+      color: var(--text-primary);
+    }
+
+    .theme-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .theme-select {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-select:hover {
+      background: var(--button-secondary-hover);
+    }
+
+    .theme-toggle {
+      padding: 0.5rem;
+      width: 36px;
+      height: 36px;
+    }
+
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
     }
 
     .clients-grid {
@@ -39,22 +111,22 @@
     }
 
     .client-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px var(--shadow-color);
       padding: 1.5rem;
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .client-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 6px var(--shadow-color);
     }
 
     .hostname {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #1a1f36;
+      color: var(--text-primary);
       margin-bottom: 1rem;
       display: flex;
       align-items: center;
@@ -66,12 +138,12 @@
       display: inline-block;
       width: 8px;
       height: 8px;
-      background: #10b981;
+      background: var(--success-color);
       border-radius: 50%;
     }
 
     .window-item {
-      background: #f8fafc;
+      background: var(--bg-tertiary);
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1rem;
@@ -79,13 +151,13 @@
 
     .window-title {
       font-weight: 500;
-      color: #4b5563;
+      color: var(--text-secondary);
       margin-bottom: 0.5rem;
     }
 
     .window-url {
       font-size: 0.9rem;
-      color: #6b7280;
+      color: var(--text-tertiary);
       word-break: break-all;
       margin-bottom: 1rem;
     }
@@ -96,7 +168,7 @@
       margin-bottom: 1rem;
       border-radius: 6px;
       overflow: hidden;
-      background: #e5e7eb;
+      background: var(--bg-tertiary);
     }
 
     .window-preview img {
@@ -112,7 +184,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #6b7280;
+      color: var(--text-tertiary);
       font-size: 0.875rem;
     }
 
@@ -132,39 +204,39 @@
     }
 
     .btn-primary {
-      background: #3b82f6;
+      background: var(--accent-color);
       color: white;
     }
 
     .btn-primary:hover {
-      background: #2563eb;
+      background: var(--accent-hover);
     }
 
     .btn-secondary {
-      background: #e5e7eb;
-      color: #4b5563;
+      background: var(--button-secondary-bg);
+      color: var(--text-secondary);
     }
 
     .btn-secondary:hover {
-      background: #d1d5db;
+      background: var(--button-secondary-hover);
     }
 
     .btn-danger {
-      background: #ef4444;
+      background: var(--danger-color);
       color: white;
     }
 
     .btn-danger:hover {
-      background: #dc2626;
+      background: var(--danger-hover);
     }
 
     .new-window-btn {
       width: 100%;
       padding: 0.75rem;
       margin-top: 1rem;
-      background: #f3f4f6;
-      color: #4b5563;
-      border: 2px dashed #d1d5db;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 2px dashed var(--border-color);
       border-radius: 8px;
       font-weight: 500;
       cursor: pointer;
@@ -172,29 +244,114 @@
     }
 
     .new-window-btn:hover {
-      background: #e5e7eb;
-      border-color: #9ca3af;
+      background: var(--button-secondary-hover);
+      border-color: var(--text-tertiary);
     }
 
     .empty-state {
       text-align: center;
       padding: 3rem;
-      color: #6b7280;
-      background: white;
+      color: var(--text-tertiary);
+      background: var(--bg-secondary);
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px var(--shadow-color);
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>WatchTower Control</h1>
+    <div class="theme-controls">
+      <select class="theme-select" onchange="updateTheme(this.value)">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <svg class="theme-icon light" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg class="theme-icon dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+    </div>
   </div>
 
   <div id="clients" class="clients-grid"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    // Theme handling
+    const THEME_KEY = 'theme-preference';
+    
+    // System theme detection
+    const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    function getSystemTheme() {
+      return systemThemeMedia.matches ? 'dark' : 'light';
+    }
+
+    function setTheme(theme, isSystem = false) {
+      let effectiveTheme = theme;
+      
+      // If system preference, determine the actual theme
+      if (theme === 'system') {
+        effectiveTheme = getSystemTheme();
+        isSystem = true;
+      }
+
+      // Apply the theme
+      document.documentElement.setAttribute('data-theme', effectiveTheme);
+      
+      // Update icons
+      const lightIcon = document.querySelector('.theme-icon.light');
+      const darkIcon = document.querySelector('.theme-icon.dark');
+      if (effectiveTheme === 'dark') {
+        lightIcon.style.display = 'none';
+        darkIcon.style.display = 'block';
+      } else {
+        lightIcon.style.display = 'block';
+        darkIcon.style.display = 'none';
+      }
+
+      // Save preference
+      localStorage.setItem(THEME_KEY, isSystem ? 'system' : effectiveTheme);
+      
+      // Update dropdown
+      const themeSelect = document.querySelector('.theme-select');
+      if (themeSelect) {
+        themeSelect.value = isSystem ? 'system' : effectiveTheme;
+      }
+    }
+
+    function updateTheme(theme) {
+      setTheme(theme, theme === 'system');
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+    }
+
+    // Initialize theme
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem(THEME_KEY) || 'system';
+      setTheme(savedTheme, savedTheme === 'system');
+    }
+
+    // Listen for system theme changes
+    systemThemeMedia.addEventListener('change', (e) => {
+      if (localStorage.getItem(THEME_KEY) === 'system') {
+        setTheme('system', true);
+      }
+    });
+
+    // Initialize theme when page loads
+    initializeTheme();
+
+    // Socket.IO handling
     const socket = io();
 
     // Helper function to format URLs
