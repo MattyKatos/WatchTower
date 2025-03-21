@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WatchTower Control</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f7fa;
+      color: #1a1f36;
+      line-height: 1.5;
+      padding: 2rem;
+    }
+
+    .header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e5e9f2;
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #1a1f36;
+    }
+
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .client-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .client-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .hostname {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a1f36;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hostname::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+
+    .window-item {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .window-title {
+      font-weight: 500;
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+    }
+
+    .window-url {
+      font-size: 0.9rem;
+      color: #6b7280;
+      word-break: break-all;
+      margin-bottom: 1rem;
+    }
+
+    .window-preview {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #e5e7eb;
+    }
+
+    .window-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: opacity 0.2s;
+    }
+
+    .window-preview.loading::after {
+      content: 'Loading preview...';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #4b5563;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .new-window-btn {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .new-window-btn:hover {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6b7280;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>WatchTower Control</h1>
+  </div>
+
+  <div id="clients" class="clients-grid"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Helper function to format URLs
+    function formatUrl(url) {
+      if (!url || url.trim() === '') return 'about:blank';
+      url = url.trim();
+      if (url.startsWith('about:')) return url;
+      if (!url.match(/^https?:\/\//i)) {
+        return 'https://' + url;
+      }
+      return url;
+    }
+
+    // Identify as a web client
+    socket.on('connect', () => {
+      socket.emit('identify', 'web');
+    });
+
+    // Update the client list
+    socket.on('clients-updated', (clients) => {
+      const clientsDiv = document.getElementById('clients');
+      clientsDiv.innerHTML = '';
+
+      if (Object.keys(clients).length === 0) {
+        clientsDiv.innerHTML = `
+          <div class="empty-state">
+            <h2>No Electron clients connected</h2>
+            <p>Waiting for clients to connect...</p>
+          </div>
+        `;
+        return;
+      }
+
+      Object.keys(clients).forEach((clientId) => {
+        const clientData = clients[clientId];
+        const clientDiv = document.createElement('div');
+        clientDiv.className = 'client-card';
+        
+        // Add hostname header
+        const hostnameDiv = document.createElement('div');
+        hostnameDiv.className = 'hostname';
+        hostnameDiv.textContent = clientData.hostname;
+        clientDiv.appendChild(hostnameDiv);
+
+        // Add windows
+        Object.keys(clientData.windows).forEach((windowId) => {
+          const windowDiv = document.createElement('div');
+          windowDiv.className = 'window-item';
+          const window = clientData.windows[windowId];
+          
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'window-title';
+          titleDiv.textContent = `Window ${windowId.slice(0, 8)}`;
+          
+          const urlDiv = document.createElement('div');
+          urlDiv.className = 'window-url';
+          urlDiv.textContent = window.url;
+
+          // Add preview container
+          const previewDiv = document.createElement('div');
+          previewDiv.className = 'window-preview';
+          previewDiv.id = `preview-${windowId}`;
+          
+          // Add preview image if available
+          if (window.preview) {
+            const img = document.createElement('img');
+            img.src = `data:image/png;base64,${window.preview}`;
+            img.alt = `Preview of ${window.url}`;
+            previewDiv.appendChild(img);
+          } else {
+            previewDiv.classList.add('loading');
+          }
+          
+          const buttonGroup = document.createElement('div');
+          buttonGroup.className = 'button-group';
+          
+          const navigateBtn = document.createElement('button');
+          navigateBtn.className = 'btn-primary';
+          navigateBtn.textContent = 'Navigate';
+          navigateBtn.onclick = () => navigateWindow(clientId, windowId);
+          
+          const refreshBtn = document.createElement('button');
+          refreshBtn.className = 'btn-secondary';
+          refreshBtn.textContent = 'Refresh Preview';
+          refreshBtn.onclick = () => refreshPreview(clientId, windowId);
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.className = 'btn-danger';
+          closeBtn.textContent = 'Close';
+          closeBtn.onclick = () => closeWindow(clientId, windowId);
+          
+          buttonGroup.appendChild(navigateBtn);
+          buttonGroup.appendChild(refreshBtn);
+          buttonGroup.appendChild(closeBtn);
+          
+          windowDiv.appendChild(titleDiv);
+          windowDiv.appendChild(urlDiv);
+          windowDiv.appendChild(previewDiv);
+          windowDiv.appendChild(buttonGroup);
+          
+          clientDiv.appendChild(windowDiv);
+        });
+
+        const newWindowBtn = document.createElement('button');
+        newWindowBtn.className = 'new-window-btn';
+        newWindowBtn.textContent = '+ New Window';
+        newWindowBtn.onclick = () => createWindow(clientId);
+        clientDiv.appendChild(newWindowBtn);
+
+        clientsDiv.appendChild(clientDiv);
+      });
+    });
+
+    // Handle preview updates
+    socket.on('window-preview-updated', (data) => {
+      const previewDiv = document.getElementById(`preview-${data.windowId}`);
+      if (previewDiv) {
+        previewDiv.classList.remove('loading');
+        previewDiv.innerHTML = `<img src="data:image/png;base64,${data.preview}" alt="Window Preview">`;
+      }
+    });
+
+    // Send a command to create a new window
+    function createWindow(clientId) {
+      const input = prompt('Enter URL:');
+      const url = formatUrl(input);
+      socket.emit('command', { targetClientId: clientId, action: 'open-window', payload: { url } });
+    }
+
+    // Send a command to close a window
+    function closeWindow(clientId, windowId) {
+      socket.emit('command', { targetClientId: clientId, action: 'close-window', payload: { windowId } });
+    }
+
+    // Send a command to navigate a window
+    function navigateWindow(clientId, windowId) {
+      const input = prompt('Enter new URL:');
+      if (input !== null) {  // Only proceed if user didn't cancel
+        const url = formatUrl(input);
+        socket.emit('command', { targetClientId: clientId, action: 'navigate-window', payload: { windowId, url } });
+      }
+    }
+
+    // Request a fresh preview
+    function refreshPreview(clientId, windowId) {
+      const previewDiv = document.getElementById(`preview-${windowId}`);
+      if (previewDiv) {
+        previewDiv.classList.add('loading');
+      }
+      socket.emit('command', { targetClientId: clientId, action: 'capture-preview', payload: { windowId } });
+    }
+  </script>
+</body>
+</html>

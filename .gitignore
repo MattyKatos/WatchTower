@@ -1,0 +1,43 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+
+# Electron build artifacts
+dist/
+out/
+*.asar
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE-specific files
+.vscode/
+.idea/
+*.iml
+
+# Electron cache
+.cache/
+
+# Debugging files
+*.pid
+*.pid.lock
+
+# Coverage reports
+coverage/
+
+# Build files
+build/
