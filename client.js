@@ -2,11 +2,19 @@ const { app, BrowserWindow } = require('electron');
 const { io } = require('socket.io-client');
 const { v4: uuidv4 } = require('uuid');
 const os = require('os');
+const path = require('path');
+const fs = require('fs');
+const yaml = require('js-yaml'); // Import js-yaml
+
+// Load configuration from YAML file
+const config = yaml.load(fs.readFileSync(path.join(__dirname, 'config.yaml'), 'utf8'));
+const port = config.server.port || 3000; // Default to 3000 if not specified
+const host = config.server.host || 'localhost'; // Default to localhost if not specified
 
 let windows = {};
 
 // Connect to the server using Socket.IO
-const socket = io('http://localhost:3000');
+const socket = io(`https://${host}:${port}`);
 
 socket.on('connect', () => {
   console.log('Connected to server');

@@ -2,6 +2,12 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const fs = require('fs');
+const yaml = require('js-yaml'); // Import js-yaml
+
+// Load configuration from YAML file
+const config = yaml.load(fs.readFileSync(path.join(__dirname, 'config.yaml'), 'utf8'));
+const port = config.server.port || 3000; // Default to 3000 if not specified
 
 const app = express();
 const server = http.createServer(app);
@@ -130,7 +136,7 @@ function getClientsData() {
 }
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || port;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

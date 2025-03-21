@@ -30,6 +30,10 @@ cd WatchTower
 npm install
 ```
 
+3. Edit Config
+- Rename config.example to config.yaml
+- Choose a port and provide an IP address that the client will be able to reach the server at.
+
 ## Usage
 
 1. Start the server:
