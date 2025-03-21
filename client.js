@@ -11,13 +11,14 @@ const config = yaml.load(fs.readFileSync(path.join(__dirname, 'config.yaml'), 'u
 const port = config.server.port || 3000; // Default to 3000 if not specified
 const host = config.server.host || 'localhost'; // Default to localhost if not specified
 
+
 let windows = {};
 
 // Connect to the server using Socket.IO
-const socket = io(`https://${host}:${port}`);
+const socket = io(`http://${host}:${port}`);
 
 socket.on('connect', () => {
-  console.log('Connected to server');
+  console.log(`Connected to server at http://${host}:${port}`);
   // Identify as an Electron client with hostname
   socket.emit('identify', {
     type: 'electron',
